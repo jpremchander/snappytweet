@@ -1,19 +1,45 @@
 #!/bin/bash
-# Install Docker and Docker Compose
+set -e  # Exit on error
+
+echo "Installing dependencies..."
+
+# Update packages
 sudo yum update -y
 
-# Install Docker (if not already installed)
+# Install Docker if not already installed
 if ! command -v docker &> /dev/null; then
-    sudo yum install docker -y
+    echo "Installing Docker..."
+    sudo yum install -y docker
     sudo systemctl start docker
     sudo systemctl enable docker
-    sudo usermod -aG docker ec2-user
+else
+    echo "Docker is already installed."
 fi
 
-# Install AWS CLI (if not already installed)
-if ! command -v aws &> /dev/null; then
-    sudo yum install aws-cli -y
+# Install Docker Compose if not installed
+if ! command -v docker-compose &> /dev/null; then
+    echo "Installing Docker Compose..."
+    sudo curl -L "https://github.com/docker/compose/releases/download/v2.24.6/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    sudo chmod +x /usr/local/bin/docker-compose
+else
+    echo "Docker Compose is already installed."
 fi
 
-# Authenticate Docker with AWS - ECR
-aws ecr get-login-password --region ca-central-1 | docker login --username AWS --password-stdin 054037100649.dkr.ecr.ca-central-1.amazonaws.com
+# Install CodeDeploy agent (if not installed)
+if ! sudo service codedeploy-agent status; then
+    echo "Installing CodeDeploy agent..."
+    sudo yum install -y ruby wget
+    cd /tmp
+    wget https://aws-codedeploy-ca-central-1.s3.ca-central-1.amazonaws.com/latest/install
+    chmod +x ./install
+    sudo ./install auto
+    sudo service codedeploy-agent start
+else
+    echo "CodeDeploy agent is already running."
+fi
+
+# Ensure Docker is running
+sudo systemctl start docker
+sudo systemctl enable docker
+
+echo "Dependencies installed successfully!"
