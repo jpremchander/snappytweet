@@ -1,20 +1,20 @@
-# Use Node.js LTS version
-FROM node:18
+# Use Node.js v23.7.0
+FROM node:23.7.0
 
 # Set working directory
 WORKDIR /app
 
-# Copy package.json files
+# Copy package.json and package-lock.json
 COPY package*.json ./
 
 # Install dependencies
 RUN npm install --force
 
-# Copy rest of the project
+# Copy the entire app
 COPY . .
 
-# Expose frontend port
+# Expose the frontend port
 EXPOSE 3000
 
-# Start Next.js in development mode for hot reload
+# Start the Next.js server
 CMD ["npm", "run", "dev"]

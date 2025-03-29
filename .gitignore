@@ -33,10 +33,7 @@ dist/
 .DS_Store
 *.pem
 
-# Debug
+# Debugnpm
 .vscode/
 .idea/
 *.swp
-
-# Test coverage
-coverage/

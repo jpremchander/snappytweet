@@ -1,24 +1,17 @@
-version: 0.0
+version: 0.2
 os: linux
 files:
-  - source: /  # All files are copied over
-    destination: /home/ec2-user/snaptweet  # Destination folder on EC2
+  - source: /frontend/*
+    destination: /home/ec2-user/frontend/
+  - source: /backend/*
+    destination: /home/ec2-user/backend/
 
 hooks:
-  BeforeInstall:
-    - location: scripts/install_dependencies.sh  # Script to install dependencies, e.g., Docker
-      timeout: 300
-      runas: ec2-user
-
   AfterInstall:
-    - location: scripts/stop_docker_containers.sh  # Stop existing containers if any
-      timeout: 300
+    - location: scripts/install_dependencies.sh
+      timeout: 180
       runas: ec2-user
-    - location: scripts/start_docker_containers.sh  # Start the new containers
-      timeout: 300
-      runas: ec2-user
-
   ApplicationStart:
-    - location: scripts/monitor_docker_containers.sh  # Ensure containers are running
-      timeout: 300
+    - location: scripts/start_containers.sh
+      timeout: 180
       runas: ec2-user

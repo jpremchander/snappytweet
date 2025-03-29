@@ -1,23 +1,20 @@
-# Use Node.js LTS for stability
-FROM node:18
+# Use Node.js v23.7.0
+FROM node:23.7.0
 
 # Set working directory
 WORKDIR /app
 
-# Copy package.json files
+# Copy package.json and package-lock.json
 COPY package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy rest of the project
+# Copy the entire app
 COPY . .
 
-# Expose backend port
+# Expose the backend port
 EXPOSE 5000
 
-# Install nodemon globally (needed for hot reload)
-RUN npm install -g nodemon
-
-# Start Express server with nodemon for hot reload
-CMD ["nodemon", "server.js"]
+# Start the server
+CMD ["node", "server.js"]
